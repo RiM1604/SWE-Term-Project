@@ -17,23 +17,25 @@
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/d8cfbe84b9.js" crossorigin="anonymous"></script>
     <!-- External CSS -->
-    <?php 
+    <?php
         require '../assets/styles/admin.php';
         require '../assets/styles/admin-options.php';
         $page="seat";
     ?>
 </head>
 <body>
+    
+
     <!-- Requiring the admin header files -->
     <?php require '../assets/partials/_admin-header.php';?>
     <?php
-                $busSql = "Select * from buses";
-                $resultBusSql = mysqli_query($conn, $busSql);
+                $routeSql = "SELECT route_id FROM routes;";
+                $resultRouteSql = mysqli_query($conn, $routeSql);
                 $arr = array();
-                while($row = mysqli_fetch_assoc($resultBusSql))
+                while($row = mysqli_fetch_assoc($resultRouteSql))
                     $arr[] = $row;
-                $busJson = json_encode($arr);
-            ?>
+                $routeJson = json_encode($arr);
+    ?>
 
             <section id="seat">
                 <div id="head">
@@ -41,23 +43,23 @@
                 </div>
                 <div id="main">
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
-                        <div class="searchBus">
-                            <input type="text" id="bus-no" name="bus-no" placeholder="Bus Number"
-                            class="busnoInput">
+                        <div class="searchRoute">
+                            <input type="text" id="route-id" name="route-id" placeholder="Route ID"
+                            class="routeidInput">
                             <div class="sugg">
                             </div>
                         </div>
 
                         <!-- Sending busJson -->
-                        <input type="hidden" id="busJson" name="busJson" value='<?php echo $busJson; ?>'>
+                        <input type="hidden" id="routeJson" name="routeJson" value='<?php echo $routeJson; ?>'>
                         <button type="submit" name="submit">Search</button>
                     </form>
                     <div id="seat-results">
                         <?php
                             if(isset($_GET["submit"]))
                             {
-                                $busno = $_GET["bus-no"];
-                                $sql = "SELECT * FROM seats WHERE bus_no='$busno'";
+                                $route_id = strtoupper(trim($_GET["route-id"]));
+                                $sql = "SELECT * FROM seats WHERE route_id='$route_id'";
                                 $result = mysqli_query($conn, $sql);
 
                                 $booked_seats = false;
@@ -131,8 +133,8 @@
                                 </tr>
                             </table>
                             <div style="text-align: center; color: #9a031e; font-weight: bold;">
-                                <?php 
-                                    echo $busno;
+                                <?php
+                                    echo $route_id;
                                 ?>
                             </div>
                             <?php }

@@ -1,7 +1,6 @@
 <!-- Show these admin pages only when the admin is logged in -->
 <?php  require '../assets/partials/_admin-check.php';   ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
+
     <script src="https://kit.fontawesome.com/d8cfbe84b9.js" crossorigin="anonymous"></script>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -22,6 +22,37 @@
         require '../assets/styles/admin-options.php';
         $page="bus";
     ?>
+<style>
+  /* Add some custom styles to the search box */
+  .input-group {
+    width: 90%;
+  }
+  .form-control {
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: #555;
+    transition: all 0.3s ease-in-out;
+  }
+  .form-control:focus {
+    border-color: #8bc34a;
+    box-shadow: none;
+    outline: 0;
+  }
+  .btn-success {
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #8bc34a;
+    border-color: #8bc34a;
+  }
+  .btn-success:hover, .btn-success:focus {
+    background-color: #7cb342;
+    border-color: #7cb342;
+  }
+</style>
 </head>
 <body>
     <!-- Requiring the admin header files -->
@@ -43,7 +74,9 @@
                 */
                 // Should be validated client-side
                 $busno = $_POST["busnumber"];
-        
+                
+                if (preg_match('/^[A-Z]+[0-9]+$/', $busno)) {
+                    
                 $bus_exists = exist_buses($conn,$busno);
                 $bus_added = false;
         
@@ -53,7 +86,12 @@
                     $sql = "INSERT INTO `buses` (`bus_no`, `bus_created`) VALUES ('$busno', current_timestamp());";
 
                     $result = mysqli_query($conn, $sql);
-
+                    if (!$result)
+                     {
+                                printf("Error: %s\n", mysqli_error($conn));
+                                exit();
+                     }
+                    
                     if($result)
                         $bus_added = true;
                 }
@@ -70,19 +108,32 @@
                     $result = mysqli_query($conn, $seatSql);
                 }
                 else{
-                    
                     // Show error alert
                     echo '<div class="my-0 alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Error!</strong> Bus already exists
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
                 }
+                }
+                else
+                {
+                    // If bus details already exists
+                    echo '<div class="my-0 alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> Bus number should start with alphabets and then contain some number code
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>';
+                }
+                
             }
             if(isset($_POST["edit"]))
             {
                 // EDIT ROUTES
                 $busno = strtoupper($_POST["busno"]);
-                $id = $_POST["id"];
+               
+                
+                if (preg_match('/^[A-Z]+[0-9]+$/', $busno))
+                {
+                    $id = $_POST["id"];
                 $id_if_bus_exists = exist_buses($conn, $busno);
                 
                 if(!$id_if_bus_exists || $id == $id_if_bus_exists)
@@ -107,6 +158,8 @@
                         $messageStatus = "success";
                         $messageHeading = "Successfull!";
                         $messageInfo = "Bus details Edited";
+                        $seatSql = "INSERT INTO `seats` (`bus_no`) VALUES ('$busno');";
+                        $result = mysqli_query($conn, $seatSql);
                     }
                     else{
                         // Show error alert
@@ -127,6 +180,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
                 }
+                    
+            }
+                else
+                    {
+                        // If bus number does not start with an alphabet or contains non-alphanumeric characters
+                        echo '<div class="my-0 alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error!</strong> Bus number should start with alphabets and then contain some number code
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>';
+                    }
 
             }
             if(isset($_POST["delete"]))
@@ -200,7 +263,83 @@
                     <div>
                         <button id="add-button" class="button btn-sm" type="button"data-bs-toggle="modal" data-bs-target="#addModal">Add Bus Details <i class="fas fa-plus"></i></button>
                     </div>
+               
+                <form class="form-inline my-2 my-lg-0" method="GET">
+                  <div class="input-group">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search Bus Number" aria-label="Search" name="q">
+                    <div class="input-group-append">
+                      <button class="btn btn-success" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                
+                <?php
+                if(isset($_GET['q']))
+                {
+                    $bus = trim($_GET['q']);
+                   
+                    if(ctype_alnum($bus)){
+                    $sql = "SELECT * FROM `buses` WHERE `buses`.`bus_no` = '$bus'";
+                    // Execute the query
+                    $result = mysqli_query($conn, $sql);
                     
+                    if (!$result) {
+                        printf("Error: %s\n", mysqli_error($conn));
+                        exit();
+                    }
+                    
+                    // Display the results in a table
+                    if(mysqli_num_rows($result) > 0) {
+                        
+                        echo '<table class="table table-hover table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Bus Number</th>
+                                    <th scope="col">Created</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+
+                        $count = 0;
+                        while($row = mysqli_fetch_assoc($result)) {
+                            $id = $row['id'];
+                            $busno = $row['bus_no'];
+                            $buscreated = $row['bus_created'];
+                            $count++;
+
+                            echo '<tr>
+                                <th scope="row">' . $count . '</th>
+                                <td>' . $busno . '</td>
+                                <td>' . $buscreated . '</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" data-id="' . $id . '" data-busno="' . $busno . '">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $id . '">Delete</button>
+                                </td>
+                            </tr>';
+                        }
+
+                        echo '</tbody></table>';
+                        echo '<a href="bus.php" class="btn btn-primary">Back</a>' ;
+                        echo '</div>';
+                    }
+                    else {
+                        echo '<div class="my-0 alert alert-danger alert-dismissible fade show" role="alert">
+                             No Buses Found ' ;
+                          echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' ;
+                        echo '</div>';
+                    }
+                    }
+                    else {
+                        echo '<div class="my-0 alert alert-danger alert-dismissible fade show" role="alert">
+                             No Buses Found ' ;
+                          echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' ;
+                        echo '</div>';
+                    }
+                }
+               
+?>
                     <table class="table table-hover table-bordered">
                         <thead>
                             <th>#</th>
@@ -305,6 +444,7 @@
     <!-- External JS -->
     <script src="../assets/scripts/admin_bus.js"></script>
     <!-- Option 1: Bootstrap Bundle with Popper -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </body>
 </html>

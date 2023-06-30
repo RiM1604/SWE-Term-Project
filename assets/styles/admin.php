@@ -50,8 +50,8 @@
     }
 
     #welcome{
-        background-color: white;
-        /* border-bottom: 1px solid rgb(19, 18, 18); */
+        background-color: #F8F8FF;
+        border-bottom: 1px solid rgb(19, 18, 18);
     }
 
     #welcome ul{
@@ -86,12 +86,16 @@
         text-decoration: none;
     }
 
-    footer{
-        border-top: 2px solid #e2e2e2;
-        padding: 0.5rem 0;
-        text-align: center;
-        font-weight: bold;
-    }
+footer {
+  height: 50px;
+  border-top: 2px solid #e2e2e2;
+  padding: 0.5rem 0;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
 
     footer p{
         margin: 0;

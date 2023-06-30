@@ -42,8 +42,8 @@ function editOrDelete(evt){
             <form class="editRouteForm d-flex justify-content-between" action="${evt.target.dataset.link}" method="POST">
 
                 <input type="hidden" name="id" value="${evt.target.dataset.id}">
-                <input type="text" class="form-control" name="viaCities" value="${evt.target.dataset.cities}">
-
+                   <input type="text" class="form-control" name="viaCities" value="${evt.target.dataset.cities}">
+                   
                 <div class="searchBus">
                     <input type="text" class="form-control busno busnoInput" name="busno" value="${evt.target.dataset.busno}">
                     <div class="sugg">
@@ -102,17 +102,7 @@ function listenforBusSearches(evt){
     }
 }
 
-// Collapses the suggestions Box when the input is not focussed on
-// routesBody.addEventListener("click", collapseSugg);
 
-// function collapseSugg(evt){
-//     if(evt.target.className.includes("busnoInput"))
-//     {
-//         const searchInput = evt.target;
-//         const suggBox = searchInput.nextElementSibling;
-//         suggBox.innerText = "";
-//     }
-// }
 
 function selectSuggestion(evt){
     if(evt.target.nodeName === "LI")

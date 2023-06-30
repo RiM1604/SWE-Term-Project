@@ -28,7 +28,13 @@
             
             // Login failure
             $error = true;
-            header("location: index.php?error=$error");
+            header("location: ./password_mismatch.php");
+        }
+        else
+        {
+            // Username not found
+            header("location: ./username_not_found.php");
+            exit;
         }
     }
 ?>

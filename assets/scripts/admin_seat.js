@@ -1,5 +1,5 @@
-const busJson = document.querySelector("#busJson").value;
-const busData = JSON.parse(busJson);
+const routeJson = document.querySelector("#routeJson").value;
+const routeData = JSON.parse(routeJson);
 const seatDiagram = document.querySelector("#displaySeats");
 let booked_seats = "";
 
@@ -23,7 +23,7 @@ const seatsBody = document.body;
 seatsBody.addEventListener("click", listenforBusSearches);
 
 function listenforBusSearches(evt){
-    if(evt.target.className.includes("busnoInput"))
+    if(evt.target.className.includes("routeidInput"))
     {
         console.log("Fired");
         const searchInput = evt.target;
@@ -53,10 +53,10 @@ function showSuggestions()
 
     const regex = new RegExp(word, "gi");
 
-    let suggestions = busData.filter(({bus_no}) => {
-        return bus_no.match(regex);
-    }).map(({bus_no}) => {
-        const bus_num = bus_no.replace(regex, `<span class="hl">${this.value.toUpperCase()}</span>`);;
+    let suggestions = routeData.filter(({route_id}) => {
+        return route_id.match(regex);
+    }).map(({route_id}) => {
+        const bus_num = route_id.replace(regex, `<span class="hl">${this.value.toUpperCase()}</span>`);;
         return `<li>${bus_num}</li>`;
     }).join("");
 
