@@ -7,4 +7,4 @@
 
 • Utilized HTML, CSS, PHP, and JavaScript for front-end development, creating an engaging and interactive user experience. Leveraged MySQL and XAMPP to establish a robust relational database, capable of efficiently storing and retrieving ticket information, handling ticket records, and facilitating smooth transactions.
 
-• Integrated a real-time feedback section where customers could provide valuable insights and feedback. Implemented an automated email system to notify admins of customer feedback, resulting in effective communication.
+• Integrated a real-time feedback section where customers could provide valuable insights and feedback. Implemented an automated email system to notify admins of customer feedback, resulting in effective communication. 
